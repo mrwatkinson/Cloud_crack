@@ -1,5 +1,9 @@
 #ignore these files
-./S3/files/*
+S3/files/*
+Cloud_Crack/ssh_keys/*
+
+Cloud_crack/crack/crackme.txt
+Cloud_crack/config/passwd-s3fs
 
 # Local .terraform directories
 **/.terraform/*
@@ -37,5 +41,5 @@ override.tf.json
 terraform.rc
 
 # don't ignore these files.
-!./S3/files/0-9.txt
-!./S3/files/Top207-probable-v2.txt
+! S3/files/0-9.txt
+! S3/files/Top207-probable-v2.txt

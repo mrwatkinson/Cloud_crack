@@ -3,8 +3,8 @@ terraform {
 }
 
 resource "aws_s3_bucket" "bucket" {
-  bucket = "${var.bucket_name}"
-  region = "${var.location}"
+  bucket = var.bucket_name
+  region = var.location
   acl = "private"
   versioning {
     enabled = false

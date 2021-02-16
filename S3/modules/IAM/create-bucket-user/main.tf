@@ -3,21 +3,21 @@ terraform {
 }
 
 resource "aws_iam_user" "bucket_user" {
-  name ="password_bucket_user"
+  name = "hashcat_bucket_user"
 }
 
 resource "aws_iam_group" "bucket_group" {
-  name = "password_bucket_group"
+  name = "hashcat_bucket_group"
 }
 
 resource "aws_iam_group_membership" "bucket_team" {
-  name = "tf-bucket-group-membership"
+  name = "hashcat_bucket__group-membership"
 
   users = [
     "${aws_iam_user.bucket_user.name}",
   ]
 
-  group = "${aws_iam_group.bucket_group.name}"
+  group = aws_iam_group.bucket_group.name
 }
 
 data "aws_iam_policy_document" "example" {
@@ -49,16 +49,16 @@ data "aws_iam_policy_document" "example" {
 resource "aws_iam_policy" "bucket" {
   name   = "bucket_policy"
   path   = "/"
-  policy = "${data.aws_iam_policy_document.example.json}"
+  policy = data.aws_iam_policy_document.example.json
 }
 
 resource "aws_iam_policy_attachment" "bucket-attach" {
   name       = "bucket-attachment"
   users      = ["${aws_iam_user.bucket_user.name}"]
   groups     = ["${aws_iam_group.bucket_group.name}"]
-  policy_arn = "${aws_iam_policy.bucket.arn}"
+  policy_arn = aws_iam_policy.bucket.arn
 }
 
 resource "aws_iam_access_key" "bucket_user" {
-  user    = "${aws_iam_user.bucket_user.name}"
+  user    = aws_iam_user.bucket_user.name
 }

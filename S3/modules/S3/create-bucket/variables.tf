@@ -1,9 +1,9 @@
 variable "bucket_name" {
-  
+  default = "my-password-bucket"
 }
 
 variable "location" {
-  default = "us-east-1"
+  default = "ca-central-1"
 }
 
 variable "directory_name" {

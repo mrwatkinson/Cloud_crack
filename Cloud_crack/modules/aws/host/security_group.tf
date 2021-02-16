@@ -9,7 +9,7 @@ data "external" "get_public_ip" {
 resource "aws_security_group" "ec2_host" {
   name = "ec2-host"
   description = "Labs setup by Terraform"
-  vpc_id = "${var.vpc_id}"
+  vpc_id = var.vpc_id
 
   ingress {
     from_port = 22

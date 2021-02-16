@@ -1,23 +1,22 @@
 terraform {
   required_version = ">= 0.11.0"
 }
-provider "aws" {
-  region = "${var.location}"
-}
 
 data "aws_region" "current" {}
 
 resource "aws_instance" "ec2_host" {
-
+  availability_zone = var.az_name
   tags = {
     Name = "Cloud_Crack"
   }
 
-  ami = "${var.amis[data.aws_region.current.name]}"
-  instance_type = "${var.instance_type}"
-  key_name = "${aws_key_pair.ec2_host.*.key_name[count.index]}"
+  ami = var.amis[data.aws_region.current.name]
+  instance_type = var.instance_type
+  //key_name = "${aws_key_pair.ec2_host.*.key_name[hostcount.index]}"
+  //key_name = "${aws_key_pair.ec2_host.*.key_name}"
+  key_name = "Cloudcrack-key"
   vpc_security_group_ids = ["${aws_security_group.ec2_host.id}"]
-  subnet_id = "${var.subnet_id}"
+  subnet_id = var.subnet_id
   associate_public_ip_address = true
 
 
@@ -33,9 +32,9 @@ resource "aws_instance" "ec2_host" {
 		
         connection {
           user = "ec2-user"
-          host = "${aws_instance.ec2_host.public_ip}"
+          host = aws_instance.ec2_host.public_ip
           agent = false
-          private_key = "${var.pem_file_location}"
+          private_key = var.pem_file_location
         }
      }
 
@@ -45,9 +44,9 @@ resource "aws_instance" "ec2_host" {
 		
         connection {
           user = "ec2-user"
-          host = "${aws_instance.ec2_host.public_ip}"
+          host = aws_instance.ec2_host.public_ip
           agent = false
-          private_key = "${var.pem_file_location}"
+          private_key = var.pem_file_location
           }
         }
 
@@ -60,9 +59,9 @@ resource "aws_instance" "ec2_host" {
 		
         connection {
           user = "ec2-user"
-          host = "${aws_instance.ec2_host.public_ip}"
+          host = aws_instance.ec2_host.public_ip
           agent = false
-          private_key = "${var.pem_file_location}"
+          private_key = var.pem_file_location
         }
      }
  
@@ -72,9 +71,9 @@ resource "aws_instance" "ec2_host" {
 		
         connection {
           user = "ec2-user"
-          host = "${aws_instance.ec2_host.public_ip}"
+          host = aws_instance.ec2_host.public_ip
           agent = false
-          private_key = "${var.pem_file_location}"
+          private_key = var.pem_file_location
           }
         }
        provisioner "file" {
@@ -83,13 +82,14 @@ resource "aws_instance" "ec2_host" {
 		
         connection {
           user = "ec2-user"
-          host = "${aws_instance.ec2_host.public_ip}"
+          host = aws_instance.ec2_host.public_ip
           agent = false
-          private_key = "${var.pem_file_location}"
+          private_key = var.pem_file_location
           }
         }
         provisioner "remote-exec" {
 	      inline = [
+        "touch cracked.txt",
 		    "sudo cp /home/ec2-user/fuse.conf /etc/fuse.conf",
         "sudo s3fs -o allow_other ${var.bucketname} /home/ec2-user/wordlists",
         "ls -al /home/ec2-user/wordlists",
@@ -97,61 +97,61 @@ resource "aws_instance" "ec2_host" {
 		
         connection {
           user = "ec2-user"
-          host = "${aws_instance.ec2_host.public_ip}"
+          host = aws_instance.ec2_host.public_ip
           agent = false
-          private_key = "${var.pem_file_location}"
+          private_key = var.pem_file_location
         }
      }
 
         provisioner "remote-exec" {
 	       inline = [
-		     "sudo hashcat ${var.hash_op} crackme.txt ${var.word_lists} -o cracked.txt --status --status-time=1",
+		     "sudo hashcat --force ${var.hash_op} crackme.txt ${var.word_lists} -o cracked.txt --status --status-time=1",
 		     ]
 		
         connection {
           user = "ec2-user"
-          host = "${aws_instance.ec2_host.public_ip}"
+          host = aws_instance.ec2_host.public_ip
           agent = false
-          private_key = "${var.pem_file_location}"
+          private_key = var.pem_file_location
         }
      }
 
         provisioner "remote-exec" {
 	      inline = [
-		    "cat cracked.txt",
+		    "sudo cat cracked.txt",
+        "sudo cp cracked.txt /home/ec2-user/wordlists/"
 		    ]
 		
         connection {
           user = "ec2-user"
-          host = "${aws_instance.ec2_host.public_ip}"
+          host = aws_instance.ec2_host.public_ip
           agent = false
-          private_key = "${var.pem_file_location}"
+          private_key = var.pem_file_location
         }
      }
 
 /*
         provisioner "local-exec" {
-	      command = [
-		    "scp -i ${var.pem_file_location} ${aws_instance.ec2_host.public_ip}:/cracked.txt ./results/"
-		    ]
-		
+	      command =  "scp -i ${var.pem_file_location} ${aws_instance.ec2_host.public_ip}:/cracked.txt ./results/"
+		    	
          }
-*/
-        
+         */
+/* 
 	tags {
 	  Name = "Cloud Crack"
 	}
-
-
+*/
+/*
   provisioner "local-exec" {
     when = "destroy"
     command = "rm .\\ssh_keys\\ec2_host_key*"
   }
-
+*/
 }
 
+
 resource "aws_key_pair" "ec2_host" {
-  count = "${var.count}"
+  count = var.hostcount
   key_name = "Cloudcrack-key"
-  public_key = "${var.pub_file_location}"
+  public_key = var.pub_file_location
 }

@@ -1,7 +1,10 @@
 variable "user_name" {
-  default = "password_bucket_user"
+  default = "hashcat_bucket_user"
 }
 
+variable "location" {
+  default = "ca-central-1"
+}
 variable "directory_name" {
   default = ""
 }
